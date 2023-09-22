@@ -94,7 +94,7 @@ def generateDataFrame(tleList, jd, adjust=True) -> pd.DataFrame:
     apsides = [computeApsides(el.sma, el.ecc) for el in elements]
     phases = [degrees(el.aop + el.trueAnomaly) % 360.0 for el in elements]
     data = {
-        'name': (tle.name for tle in tleList),
+        'sat-id': (tle.name.split('-', 1)[1] for tle in tleList),
         'inc': (degrees(el.inc) for el in elements),
         'raan': (degrees(el.raan) for el in elements),
         'phase': phases,
