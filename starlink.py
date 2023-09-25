@@ -12,6 +12,8 @@ from sattrack.spacetime import now, JulianDate
 from sattrack.topocentric import getNextPass
 from sattrack.util import EARTH_EQUITORIAL_RADIUS
 
+import update_starlink_tle
+from arg import getArgs
 from sortgroups import importStarlinkTLE
 
 
@@ -425,9 +427,12 @@ def main(group: str, launch: str, geo: GeoPosition, jd: JulianDate, includePass=
 
 
 if __name__ == '__main__':
-    groupArg = sys.argv[1]
-    launchArg = sys.argv[2]
-    gc = geocoder.ip('me')
-    geoArg = GeoPosition(gc.latlng[0], gc.latlng[1])
-    jdArg = now()
-    exit(main(groupArg, launchArg, geoArg, jdArg, True))
+    args = getArgs()
+    if args['forceUpdate']:
+        print('updating TLEs')
+        rtn = update_starlink_tle.main()
+        if rtn != 0:
+            exit(rtn)
+
+    rtn = main(args['groupNumber'], args['launchNumber'], args['geo'], args['time'], args['includePass'])
+    exit(rtn)
