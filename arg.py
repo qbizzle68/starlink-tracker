@@ -25,7 +25,7 @@ def createGeoPosition(geo_string):
     return GeoPosition(*(float(a) for a in args))
 
 
-class geoCoderAction(argparse.Action):
+class GeoCoderAction(argparse.Action):
 
     def __call__(self, parser, namespace, value, option_string=None):
         """Use geocoder package to retrieve users geo-position."""
@@ -36,7 +36,7 @@ class geoCoderAction(argparse.Action):
         setattr(namespace, 'geo', geo)
 
 
-class reduceGeoAction(argparse.Action):
+class ReduceGeoAction(argparse.Action):
 
     def __call__(self, parser, namespace, value, option_string=None):
         # Basically a conversion method to convert value from list to GeoPosition. I think this is needed
@@ -49,22 +49,30 @@ class reduceGeoAction(argparse.Action):
 # delete this later
 __package__ = 'starlink'
 __version__ = '0.1.0'
+
+
 def createParser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(description="Compute batch specific starlink data.", prog=__package__)
-    parser.add_argument('group_number', metavar='group-number', help='the group number the batch belongs to')
-    parser.add_argument('launch_number', metavar='launch-number', help='the launch number of the group the batch is from')
+    parser.add_argument('groupNumber', metavar='group-number', help='the group number the batch belongs to')
+    parser.add_argument('launchNumber', metavar='launch-number',
+                        help='the launch number of the group the batch is from')
 
     geoGroup = parser.add_mutually_exclusive_group(required=True)
     # use a sub-parser for this?
-    geoGroup.add_argument('--geo', metavar='geo-position', nargs='+', type=createGeoPosition, action=reduceGeoAction,
+    geoGroup.add_argument('--geo', nargs='+', type=createGeoPosition, action=ReduceGeoAction,
                           help='geolocation values for computing passes, syntax: lat lng [elv]')
-    geoGroup.add_argument('--use-geocoder', action=geoCoderAction, nargs=0, default=False, type=bool,
-                          help='use geocoder package to automatically detect user geolocation')
+    geoGroup.add_argument('--use-geocoder', action=GeoCoderAction, nargs=0, default=False, type=bool,
+                          dest='useGeocoder', help='use geocoder package to automatically detect user geolocation')
 
-    parser.add_argument('-n', '--visible_number', type=int, default=1,
-                        help='the nth visible pass from the time given, default is 1')
-    parser.add_argument('--time', type=dataTimeToJulianDate, default=now(),
-                        help='time to begin looking for visible passes, default is current time')
+    passGroup = parser.add_argument_group('passes', 'arguments to control visual pass information')
+
+    passGroup.add_argument('-n', '--visible_number', metavar='COUNT', type=int, default=1, dest='visibleNumber',
+                           help='find the nth visible pass from the time given, default is 1')
+    passGroup.add_argument('--time', type=dataTimeToJulianDate, default=now(),
+                           help='time to begin looking for visible passes, default is current time')
+
+    parser.add_argument('-f', '--force-update', action='store_true', default=False, dest='forceUpdate',
+                        help='update TLE data through an HTTP request')
     parser.add_argument('-v', '--version', action='version', version=f'%(prog)s {__version__}')
 
     showPassGroup = parser.add_mutually_exclusive_group()
@@ -75,9 +83,15 @@ def createParser() -> argparse.ArgumentParser:
 
     return parser
 
-if __name__ == '__main__':
+
+def getArgs() -> dict:
     parser = createParser()
-    namespace = parser.parse_args()
-    print(namespace)
+    return parser.__dict__
+
+
+if __name__ == '__main__':
+    parser1 = createParser()
+    namespace1 = parser1.parse_args()
+    print(namespace1)
 
     exit(0)
