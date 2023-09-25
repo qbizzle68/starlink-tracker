@@ -86,7 +86,8 @@ def createParser() -> argparse.ArgumentParser:
 
 def getArgs() -> dict:
     parser = createParser()
-    return parser.__dict__
+    namespace = parser.parse_args()
+    return namespace.__dict__
 
 
 if __name__ == '__main__':
