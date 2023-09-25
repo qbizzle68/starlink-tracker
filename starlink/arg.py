@@ -4,6 +4,7 @@ import datetime
 import geocoder
 from sattrack.coordinates import GeoPosition
 from sattrack.spacetime import now, JulianDate
+from . import __version__
 
 
 def dataTimeToJulianDate(date_string):
@@ -44,11 +45,6 @@ class ReduceGeoAction(argparse.Action):
         # a list of floats into a GeoPosition instance.
 
         setattr(namespace, self.dest, value[0])
-
-
-# delete this later
-__package__ = 'starlink'
-__version__ = '0.1.0'
 
 
 def createParser() -> argparse.ArgumentParser:
