@@ -1,4 +1,4 @@
-dependencies = ['pandas']
+dependencies = ['pandas', 'sattrack']
 missingDependencies = []
 
 for dep in dependencies:
