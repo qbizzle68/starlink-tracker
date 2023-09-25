@@ -1,13 +1,6 @@
-from sattrack.coordinates import GeoPosition
-from sattrack.exceptions import TLEException
-from sattrack.spacetime import JulianDate
-
 from starlink import update_starlink_tle
 from starlink.arg import getArgs
-from starlink.frames import generateDataFrame, getLaunchData
-from starlink.import_tle import fetchTLEsFromGroup
 from starlink.main import main
-from starlink.passes import getBatchTimes
 
 
 if __name__ == '__main__':
