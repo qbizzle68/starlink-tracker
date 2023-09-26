@@ -16,16 +16,6 @@ def dataTimeToJulianDate(date_string):
     return jd
 
 
-def createGeoPosition(geo_string):
-    """Create a geo position from components from CLI arguments."""
-
-    args = geo_string.split(' ')
-    if len(args) not in (2, 3):
-        raise argparse.ArgumentError(geo_string, 'geo argument must have 2 or 3 components')
-
-    return GeoPosition(*(float(a) for a in args))
-
-
 class GeoCoderAction(argparse.Action):
 
     def __call__(self, parser, namespace, value, option_string=None):
@@ -37,14 +27,20 @@ class GeoCoderAction(argparse.Action):
         setattr(namespace, 'geo', geo)
 
 
-class ReduceGeoAction(argparse.Action):
+class GeoAction(argparse.Action):
 
-    def __call__(self, parser, namespace, value, option_string=None):
+    def __call__(self, parser, namespace, values, option_string=None):
         # Basically a conversion method to convert value from list to GeoPosition. I think this is needed
         # because of the nargs='?' used with the --geo argument. The parser expects a list even though we convert
         # a list of floats into a GeoPosition instance.
 
-        setattr(namespace, self.dest, value[0])
+        if len(values) not in (2, 3):
+            raise argparse.ArgumentError(self, 'geo argument must have 2 or 3 components')
+
+        args = (float(val) for val in values)
+        geo = GeoPosition(*args)
+
+        setattr(namespace, self.dest, geo)
 
 
 def createParser() -> argparse.ArgumentParser:
@@ -55,7 +51,7 @@ def createParser() -> argparse.ArgumentParser:
 
     geoGroup = parser.add_mutually_exclusive_group(required=True)
     # use a sub-parser for this?
-    geoGroup.add_argument('--geo', nargs='+', type=createGeoPosition, action=ReduceGeoAction,
+    geoGroup.add_argument('--geo', nargs='+', action=GeoAction,
                           help='geolocation values for computing passes, syntax: lat lng [elv]')
     geoGroup.add_argument('--use-geocoder', action=GeoCoderAction, nargs=0, default=False, type=bool,
                           dest='useGeocoder', help='use geocoder package to automatically detect user geolocation')
@@ -84,11 +80,3 @@ def getArgs() -> dict:
     parser = createParser()
     namespace = parser.parse_args()
     return namespace.__dict__
-
-
-if __name__ == '__main__':
-    parser1 = createParser()
-    namespace1 = parser1.parse_args()
-    print(namespace1)
-
-    exit(0)
