@@ -38,10 +38,12 @@ from .update_starlink_tle import (
     main as updateStarlinkTLE
 )
 
-# from .__main__ import (
-#     getDataFrame,
-#     main,
-# )
+from .main import (
+    getDataFrame,
+    main,
+)
+
+from sattrack.spacetime.juliandate import now
 
 __all__ = (
     'getLaunchData',
@@ -55,4 +57,7 @@ __all__ = (
     'getResponse',
     'exportBody',
     'updateStarlinkTLE',
+    'getDataFrame',
+    'main',
+    'now',
 )
