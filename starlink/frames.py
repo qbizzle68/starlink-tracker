@@ -162,7 +162,10 @@ def refineBatch(groups: list[pd.DataFrame]) -> list[pd.DataFrame]:
         tmp = []
         for i, group in enumerate(rtn):
             if i == count - 1:
-                ignore = [0, -1]
+                if i == 0:
+                    ignore = [-1]
+                else:
+                    ignore = [0, -1]
             else:
                 ignore = []
 
