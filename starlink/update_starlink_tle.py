@@ -27,7 +27,7 @@ def exportBody(filename):
 
 def main():
     try:
-        exportBody('../starlink.tle')
+        exportBody('starlink.tle')
     except IOError:
         return 1
     return 0
