@@ -9,7 +9,7 @@ from starlink.import_tle import fetchAllTLEs
 
 def getNthPasses(df: pd.DataFrame, geo: GeoPosition, jd: JulianDate, visibleNumber=1) -> list:
     tleMap = fetchAllTLEs()
-    tleList = [tleMap[f'STARLINK-{satId}'] for satId in df['sat-id']]
+    tleList = [tleMap[satId] for satId in df['sat-id']]
 
     passList = []
     for tle in tleList:
